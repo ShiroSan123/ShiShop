@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
-import { getStore } from "@/lib/store";
+import { deleteAdminSession } from "@/lib/serverAuth";
 
 export const POST = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
 
-  if (token) {
-    const store = getStore();
-    delete store.sessions[token];
-  }
+  await deleteAdminSession(token);
 
   cookieStore.set(ADMIN_SESSION_COOKIE, "", {
     httpOnly: true,

@@ -1,5 +1,14 @@
 create extension if not exists "pgcrypto";
 
+create table if not exists public.admin_sessions (
+  token uuid primary key default gen_random_uuid(),
+  username text not null,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null
+);
+
+create index if not exists admin_sessions_expires_idx on public.admin_sessions(expires_at);
+
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   title text not null,

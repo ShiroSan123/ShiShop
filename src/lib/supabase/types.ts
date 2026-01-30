@@ -9,6 +9,27 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      admin_sessions: {
+        Row: {
+          token: string;
+          username: string;
+          created_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          token?: string;
+          username: string;
+          created_at?: string;
+          expires_at: string;
+        };
+        Update: {
+          token?: string;
+          username?: string;
+          created_at?: string;
+          expires_at?: string;
+        };
+        Relationships: [];
+      };
       products: {
         Row: {
           id: string;

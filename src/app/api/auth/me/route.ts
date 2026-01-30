@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
-import { getStore } from "@/lib/store";
+import { getAdminSession } from "@/lib/serverAuth";
 
 export const GET = async () => {
   const cookieStore = await cookies();
@@ -10,8 +10,7 @@ export const GET = async () => {
     return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
   }
 
-  const store = getStore();
-  const session = store.sessions[token];
+  const session = await getAdminSession();
 
   if (!session) {
     return NextResponse.json({ error: "Не авторизован" }, { status: 401 });

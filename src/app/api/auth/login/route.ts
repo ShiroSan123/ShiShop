@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 import { LoginSchema } from "@/lib/schemas";
-import { getStore } from "@/lib/store";
+import { createAdminSession } from "@/lib/serverAuth";
 
 export const POST = async (request: Request) => {
   let body: unknown;
@@ -36,16 +36,7 @@ export const POST = async (request: Request) => {
     );
   }
 
-  const store = getStore();
-  const token =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-  store.sessions[token] = {
-    username: adminUsername,
-    createdAt: new Date().toISOString(),
-  };
+  const token = await createAdminSession(adminUsername, 7);
 
   const cookieStore = await cookies();
   cookieStore.set(ADMIN_SESSION_COOKIE, token, {

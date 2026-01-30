@@ -2,20 +2,20 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 import { ProductUpdateSchema } from "@/lib/schemas";
-import { getStore } from "@/lib/store";
 import {
   deleteProductServer,
   getProductByIdServer,
   isSlugTakenServer,
   updateProductServer,
 } from "@/lib/serverProducts";
+import { getAdminSession } from "@/lib/serverAuth";
 
 const hasAdminSession = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
   if (!token) return false;
-  const store = getStore();
-  return Boolean(store.sessions[token]);
+  const session = await getAdminSession();
+  return Boolean(session);
 };
 
 export const GET = async (
