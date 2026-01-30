@@ -124,7 +124,8 @@ export const listProductsServer = async (query: ProductQuery = {}) => {
     throw new Error(error.message);
   }
 
-  return (data ?? []).map(mapDbProduct);
+  const rows = (data ?? []) as DbProductRow[];
+  return rows.map(mapDbProduct);
 };
 
 export const getProductByIdServer = async (id: string) => {
@@ -144,7 +145,8 @@ export const getProductByIdServer = async (id: string) => {
     throw new Error(error.message);
   }
 
-  return data ? mapDbProduct(data) : null;
+  const row = data as DbProductRow | null;
+  return row ? mapDbProduct(row) : null;
 };
 
 export const getProductBySlugServer = async (slug: string) => {
@@ -164,7 +166,8 @@ export const getProductBySlugServer = async (slug: string) => {
     throw new Error(error.message);
   }
 
-  return data ? mapDbProduct(data) : null;
+  const row = data as DbProductRow | null;
+  return row ? mapDbProduct(row) : null;
 };
 
 export const isSlugTakenServer = async (slug: string, excludeId?: string) => {
@@ -224,7 +227,8 @@ export const createProductServer = async (payload: ProductInput) => {
     throw new Error(error.message);
   }
 
-  return mapDbProduct(data);
+  const row = data as DbProductRow;
+  return mapDbProduct(row);
 };
 
 export const updateProductServer = async (
@@ -261,7 +265,8 @@ export const updateProductServer = async (
     throw new Error(error.message);
   }
 
-  return data ? mapDbProduct(data) : null;
+  const row = data as DbProductRow | null;
+  return row ? mapDbProduct(row) : null;
 };
 
 export const deleteProductServer = async (id: string) => {
