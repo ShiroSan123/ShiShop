@@ -1,0 +1,6 @@
+export const SITE_NAME = "ShiShop";
+export const SITE_TAGLINE = "Личные вещи и подборки из Китая";
+
+export const TELEGRAM_USERNAME = "shishop_demo";
+
+export const ADMIN_SESSION_COOKIE = "shishop_session";
