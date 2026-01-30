@@ -35,14 +35,15 @@ const getAdminSessionByToken = async (token?: string | null) => {
     throw new Error(error.message);
   }
 
-  if (!data) return null;
+  const row = data as AdminSessionRow | null;
+  if (!row) return null;
 
-  if (new Date(data.expires_at).getTime() < Date.now()) {
+  if (new Date(row.expires_at).getTime() < Date.now()) {
     await supabase.from("admin_sessions").delete().eq("token", token);
     return null;
   }
 
-  return mapAdminSession(data as AdminSessionRow);
+  return mapAdminSession(row);
 };
 
 export const createAdminSession = async (
