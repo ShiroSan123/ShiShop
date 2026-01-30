@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Manrope, Playfair_Display } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
@@ -30,7 +31,10 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${manrope.variable} ${playfair.variable} antialiased`}>
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          {children}
+          <Analytics />
+        </ToastProvider>
       </body>
     </html>
   );
