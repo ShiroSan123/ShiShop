@@ -4,3 +4,6 @@ export const SITE_TAGLINE = "Личные вещи и подборки из Ки
 export const TELEGRAM_USERNAME = "shishop_demo";
 
 export const ADMIN_SESSION_COOKIE = "shishop_session";
+
+export const SUPABASE_STORAGE_BUCKET =
+  process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ?? "product-images";

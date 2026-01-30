@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center gap-6">
+    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center gap-6 px-4">
       <div className="space-y-3">
         <Badge label="Админка" variant="accent" />
         <h1 className="text-3xl font-semibold text-slate-900">

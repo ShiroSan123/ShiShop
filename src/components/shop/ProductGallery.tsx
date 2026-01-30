@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface ProductGalleryProps {
@@ -16,9 +16,15 @@ export const ProductGallery = ({ images, title }: ProductGalleryProps) => {
 
   return (
     <div className="space-y-3">
-      <div className="aspect-[4/3] overflow-hidden rounded-[24px] border border-slate-200 bg-slate-100 shadow-lg">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[24px] border border-slate-200 bg-slate-100 shadow-lg">
         {current ? (
-          <img src={current} alt={title} className="h-full w-full object-cover" />
+          <Image
+            src={current}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover"
+          />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-slate-400">
             Нет фото
@@ -32,15 +38,17 @@ export const ProductGallery = ({ images, title }: ProductGalleryProps) => {
             type="button"
             onClick={() => setActive(index)}
             className={cn(
-              "h-16 w-20 overflow-hidden rounded-xl border",
+              "relative h-16 w-20 overflow-hidden rounded-xl border",
               index === active ? "border-[var(--accent)]" : "border-slate-200"
             )}
           >
             {image ? (
-              <img
+              <Image
                 src={image}
                 alt={`${title} ${index + 1}`}
-                className="h-full w-full object-cover"
+                fill
+                sizes="80px"
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-xs text-slate-400">

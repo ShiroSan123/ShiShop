@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import {
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -26,6 +32,8 @@ export const ProductForm = ({ mode, initial }: ProductFormProps) => {
   const router = useRouter();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [images, setImages] = useState<string[]>(
     initial?.images.length ? initial.images : [""]
   );
@@ -126,6 +134,74 @@ export const ProductForm = ({ mode, initial }: ProductFormProps) => {
 
   const handleImageChange = (index: number, value: string) => {
     setImages((prev) => prev.map((item, idx) => (idx === index ? value : item)));
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Неподдерживаемый формат",
+        description: "Загрузите JPG, PNG или WebP.",
+        variant: "error",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Файл слишком большой",
+        description: "Максимальный размер — 5MB.",
+        variant: "error",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/uploads", {
+        method: "POST",
+        body: formData,
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.url) {
+        throw new Error(payload.error ?? "Не удалось загрузить файл");
+      }
+
+      setImages((prev) => {
+        const next = [...prev];
+        const emptyIndex = next.findIndex((value) => value.trim() === "");
+        if (emptyIndex === -1) {
+          next.push(payload.url as string);
+        } else {
+          next[emptyIndex] = payload.url as string;
+        }
+        return next;
+      });
+
+      toast({ title: "Файл загружен", variant: "success" });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Ошибка загрузки";
+      toast({ title: "Не удалось загрузить", description: message, variant: "error" });
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
   };
 
   const addImageField = () => {
@@ -256,9 +332,30 @@ export const ProductForm = ({ mode, initial }: ProductFormProps) => {
             </h3>
             <p className="text-xs text-slate-500">Добавьте ссылки на изображения</p>
           </div>
-          <Button type="button" variant="secondary" onClick={addImageField}>
-            Добавить фото
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleUploadClick}
+              loading={uploading}
+            >
+              Загрузить файл
+            </Button>
+            <Button type="button" variant="ghost" onClick={addImageField}>
+              Добавить ссылку
+            </Button>
+          </div>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        <div className="text-xs text-slate-500">
+          Поддерживаются JPG, PNG, WebP. Максимум 5MB.
         </div>
 
         <div className="space-y-3">

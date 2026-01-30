@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
 import { PRODUCT_STATUS_LABELS, PRODUCT_TYPE_LABELS } from "@/lib/labels";
 import { type Product } from "@/lib/types";
@@ -23,10 +23,12 @@ export const ProductCard = ({ product }: { product: Product }) => {
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
         {image ? (
-          <img
+          <Image
             src={image}
             alt={product.title}
-            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition duration-700 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-slate-400">
