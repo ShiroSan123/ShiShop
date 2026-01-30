@@ -83,12 +83,6 @@ export default function AdminLoginPage() {
           Войти
         </Button>
       </form>
-
-      <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-xs text-slate-500">
-        По умолчанию логин и пароль: <span className="font-semibold">admin</span>.
-        Измените их в <span className="font-semibold">.env.local</span>, задав
-        ADMIN_USERNAME и ADMIN_PASSWORD.
-      </div>
     </div>
   );
 }
