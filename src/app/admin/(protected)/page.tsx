@@ -4,7 +4,7 @@ import { PRODUCT_STATUS_LABELS, PRODUCT_TYPE_LABELS } from "@/lib/labels";
 import { Button } from "@/components/ui/Button";
 
 export default async function AdminDashboardPage() {
-  const products = listProductsServer();
+  const products = await listProductsServer();
   const total = products.length;
   const available = products.filter((product) => product.status === "available")
     .length;

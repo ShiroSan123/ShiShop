@@ -3,7 +3,11 @@ import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 import { ProductInputSchema, ProductQuerySchema } from "@/lib/schemas";
 import { getStore } from "@/lib/store";
-import { listProductsServer } from "@/lib/serverProducts";
+import {
+  createProductServer,
+  isSlugTakenServer,
+  listProductsServer,
+} from "@/lib/serverProducts";
 
 const hasAdminSession = async () => {
   const cookieStore = await cookies();
@@ -19,7 +23,7 @@ export const GET = async (request: Request) => {
   const parsed = ProductQuerySchema.safeParse(rawQuery);
   const query = parsed.success ? parsed.data : {};
 
-  const products = listProductsServer(query);
+  const products = await listProductsServer(query);
 
   return NextResponse.json(products);
 };
@@ -29,7 +33,6 @@ export const POST = async (request: Request) => {
     return NextResponse.json({ error: "Недостаточно прав" }, { status: 401 });
   }
 
-  const store = getStore();
   const body = await request.json();
   const parsed = ProductInputSchema.safeParse(body);
 
@@ -40,30 +43,16 @@ export const POST = async (request: Request) => {
     );
   }
 
-  const existing = store.products.find(
-    (product) => product.slug === parsed.data.slug
-  );
+  const slugTaken = await isSlugTakenServer(parsed.data.slug);
 
-  if (existing) {
+  if (slugTaken) {
     return NextResponse.json(
       { error: "Слаг уже используется" },
       { status: 409 }
     );
   }
 
-  const now = new Date().toISOString();
-  const id =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const created = {
-    ...parsed.data,
-    id,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  store.products.unshift(created);
+  const created = await createProductServer(parsed.data);
 
   return NextResponse.json(created, { status: 201 });
 };

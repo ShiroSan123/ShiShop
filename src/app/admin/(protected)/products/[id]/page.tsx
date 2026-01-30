@@ -8,7 +8,7 @@ export default async function AdminProductEditPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = getProductByIdServer(id);
+  const product = await getProductByIdServer(id);
 
   if (!product) {
     notFound();

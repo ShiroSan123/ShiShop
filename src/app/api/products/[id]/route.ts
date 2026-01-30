@@ -3,6 +3,12 @@ import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 import { ProductUpdateSchema } from "@/lib/schemas";
 import { getStore } from "@/lib/store";
+import {
+  deleteProductServer,
+  getProductByIdServer,
+  isSlugTakenServer,
+  updateProductServer,
+} from "@/lib/serverProducts";
 
 const hasAdminSession = async () => {
   const cookieStore = await cookies();
@@ -17,8 +23,7 @@ export const GET = async (
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const { id } = await params;
-  const store = getStore();
-  const product = store.products.find((item) => item.id === id);
+  const product = await getProductByIdServer(id);
 
   if (!product) {
     return NextResponse.json({ error: "Товар не найден" }, { status: 404 });
@@ -36,13 +41,6 @@ export const PUT = async (
     return NextResponse.json({ error: "Недостаточно прав" }, { status: 401 });
   }
 
-  const store = getStore();
-  const index = store.products.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return NextResponse.json({ error: "Товар не найден" }, { status: 404 });
-  }
-
   const body = await request.json();
   const parsed = ProductUpdateSchema.safeParse(body);
 
@@ -54,11 +52,8 @@ export const PUT = async (
   }
 
   if (parsed.data.slug) {
-    const slugExists = store.products.find(
-      (item) => item.slug === parsed.data.slug && item.id !== id
-    );
-
-    if (slugExists) {
+    const slugTaken = await isSlugTakenServer(parsed.data.slug, id);
+    if (slugTaken) {
       return NextResponse.json(
         { error: "Слаг уже используется" },
         { status: 409 }
@@ -66,13 +61,10 @@ export const PUT = async (
     }
   }
 
-  const updated = {
-    ...store.products[index],
-    ...parsed.data,
-    updatedAt: new Date().toISOString(),
-  };
-
-  store.products[index] = updated;
+  const updated = await updateProductServer(id, parsed.data);
+  if (!updated) {
+    return NextResponse.json({ error: "Товар не найден" }, { status: 404 });
+  }
 
   return NextResponse.json(updated);
 };
@@ -86,14 +78,9 @@ export const DELETE = async (
     return NextResponse.json({ error: "Недостаточно прав" }, { status: 401 });
   }
 
-  const store = getStore();
-  const index = store.products.findIndex((item) => item.id === id);
-
-  if (index === -1) {
+  const deleted = await deleteProductServer(id);
+  if (!deleted) {
     return NextResponse.json({ error: "Товар не найден" }, { status: 404 });
   }
-
-  store.products.splice(index, 1);
-
   return NextResponse.json({ ok: true });
 };
