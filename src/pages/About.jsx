@@ -69,22 +69,22 @@ export default function About() {
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="bg-foreground rounded-3xl p-8 md:p-12 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-background mb-4">
+        <div className="bg-foreground text-background dark:bg-card dark:text-foreground rounded-3xl p-8 md:p-12 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-background dark:text-foreground mb-4">
             Остались вопросы?
           </h2>
-          <p className="text-background/70 mb-8 max-w-xl mx-auto">
+          <p className="text-background/70 dark:text-muted-foreground mb-8 max-w-xl mx-auto">
             Напишите мне в Telegram — отвечу на все вопросы и помогу с выбором
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="https://t.me/ShiruiSan" target="_blank" rel="noopener noreferrer">
-              <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-base font-medium gap-2">
+              <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-white text-base font-medium gap-2">
                 <Send className="w-5 h-5" />
                 Написать в Telegram
               </Button>
             </a>
             <Link to={createPageUrl('Shop')}>
-              <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 rounded-xl text-base font-medium gap-2 border-2 border-background/40 text-background hover:bg-background/10">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 rounded-xl text-base font-medium gap-2 bg-transparent border-2 border-background/40 text-background hover:bg-background/10 dark:border-foreground/20 dark:text-foreground dark:hover:bg-muted/60">
                 Смотреть каталог
                 <ArrowRight className="w-5 h-5" />
               </Button>
