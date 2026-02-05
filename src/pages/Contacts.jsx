@@ -26,7 +26,7 @@ export default function Contacts() {
               </div>
               <h3 className="font-bold text-foreground mb-1">Telegram</h3>
               <p className="text-muted-foreground text-sm mb-2">Основной способ связи</p>
-              <p className="text-[#0088cc] font-medium group-hover:underline">@username</p>
+              <p className="text-[#0088cc] font-medium group-hover:underline">@ShiruiSan</p>
             </a>
 
             <a 
@@ -40,7 +40,7 @@ export default function Contacts() {
               </div>
               <h3 className="font-bold text-foreground mb-1">WhatsApp</h3>
               <p className="text-muted-foreground text-sm mb-2">Альтернативная связь</p>
-              <p className="text-[#25D366] font-medium group-hover:underline">+7 (900) 123-45-67</p>
+              <p className="text-[#25D366] font-medium group-hover:underline">+7 (993) 181-75-20</p>
             </a>
           </div>
 
