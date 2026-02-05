@@ -67,30 +67,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Why me */}
-      <section className="bg-muted py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-12 text-center">
-            Почему выбирают меня
-          </h2>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: '✨', title: 'Честность', desc: 'Всегда пишу реальное состояние товара' },
-              { icon: '📸', title: 'Фото', desc: 'Только настоящие фотографии товаров' },
-              { icon: '💬', title: 'На связи', desc: 'Быстро отвечаю на вопросы в Telegram' },
-              { icon: '🚀', title: 'Доставка', desc: 'Отправляю удобным для вас способом' },
-            ].map((item) => (
-              <div key={item.title} className="p-6 bg-card rounded-2xl">
-                <div className="text-3xl mb-4">{item.icon}</div>
-                <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="bg-foreground rounded-3xl p-8 md:p-12 text-center">
