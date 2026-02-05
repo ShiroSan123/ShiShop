@@ -16,7 +16,7 @@ export default function Contacts() {
           {/* Contact cards */}
           <div className="grid sm:grid-cols-2 gap-4 mb-16">
             <a 
-              href="https://t.me/username" 
+              href="https://t.me/ShiruiSan" 
               target="_blank" 
               rel="noopener noreferrer"
               className="group p-6 bg-gradient-to-br from-[#0088cc]/10 to-[#0088cc]/5 rounded-2xl hover:shadow-lg transition-all"

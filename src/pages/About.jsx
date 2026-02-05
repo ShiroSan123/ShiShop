@@ -101,7 +101,7 @@ export default function About() {
             Напишите мне в Telegram — отвечу на все вопросы и помогу с выбором
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="https://t.me/username" target="_blank" rel="noopener noreferrer">
+            <a href="https://t.me/ShiruiSan" target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-base font-medium gap-2">
                 <Send className="w-5 h-5" />
                 Написать в Telegram

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { filterProducts } from '@/lib/supabase/products';
@@ -36,8 +36,8 @@ const typeConfig = {
 };
 
 export default function ProductPage() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const slug = urlParams.get('slug');
+  const [searchParams] = useSearchParams();
+  const slug = searchParams.get('slug');
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['product', slug],
@@ -99,10 +99,11 @@ export default function ProductPage() {
   const type = typeConfig[product.type];
   const isSold = product.status === 'sold';
 
+  const productUrl = window.location.href;
   const telegramMessage = encodeURIComponent(
-    `Привет! Интересует товар: ${product.title}\n${window.location.href}`
+    `${productUrl}\nПривет! Интересует товар «${product.title}». Можно подробности?`
   );
-  const telegramLink = `https://t.me/username?text=${telegramMessage}`;
+  const telegramLink = `https://t.me/ShiruiSan?text=${telegramMessage}`;
 
   return (
     <div className="min-h-screen bg-background text-foreground">

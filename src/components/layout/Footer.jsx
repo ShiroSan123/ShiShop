@@ -50,7 +50,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a 
-                  href="https://t.me/username" 
+                  href="https://t.me/ShiruiSan" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm"
