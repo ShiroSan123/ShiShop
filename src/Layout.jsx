@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ThemeProvider from '@/components/theme/ThemeProvider';
+import { Toaster } from '@/components/ui/sonner';
 import { getAdminSession } from '@/lib/supabase/adminAuth';
 
 export default function Layout({ children, currentPageName }) {
@@ -23,7 +24,12 @@ export default function Layout({ children, currentPageName }) {
   const isAdminPage = currentPageName?.startsWith('Admin');
 
   if (isAdminPage) {
-    return <ThemeProvider>{children}</ThemeProvider>;
+    return (
+      <ThemeProvider>
+        {children}
+        <Toaster />
+      </ThemeProvider>
+    );
   }
 
   return (
@@ -35,6 +41,7 @@ export default function Layout({ children, currentPageName }) {
         </main>
         <Footer />
       </div>
+      <Toaster />
     </ThemeProvider>
   );
 }

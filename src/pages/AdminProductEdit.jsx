@@ -38,8 +38,10 @@ export default function AdminProductEdit() {
       toast.success('Товар создан');
       navigate(createPageUrl('AdminProducts'));
     },
-    onError: () => {
-      toast.error('Ошибка при создании товара');
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : 'Неизвестная ошибка';
+      toast.error(`Ошибка при создании товара: ${message}`);
     },
   });
 
@@ -50,8 +52,10 @@ export default function AdminProductEdit() {
       toast.success('Товар сохранён');
       navigate(createPageUrl('AdminProducts'));
     },
-    onError: () => {
-      toast.error('Ошибка при сохранении');
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : 'Неизвестная ошибка';
+      toast.error(`Ошибка при сохранении: ${message}`);
     },
   });
 
