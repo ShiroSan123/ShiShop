@@ -55,6 +55,16 @@ export default function ProductPage() {
   });
 
   const product = products[0];
+  const rawStatus = String(product?.status || "available").toLowerCase();
+  const normalizedStatus =
+    rawStatus === "в наличии"
+      ? "available"
+      : rawStatus === "забронировано"
+        ? "reserved"
+        : rawStatus === "продано"
+          ? "sold"
+          : rawStatus;
+  const isAvailable = normalizedStatus === "available";
 
   const { data: relatedProducts = [] } = useQuery({
     queryKey: ["related-products", product?.category],
@@ -279,7 +289,7 @@ export default function ProductPage() {
                   size="lg"
                   variant="outline"
                   className="h-14 px-8 rounded-2xl flex-1"
-                  disabled={product.status !== "available"}
+                  disabled={!isAvailable}
                   onClick={() => {
                     const message = `Здравствуйте! Интересует товар: ${product.name}\nЦена: ${product.price} ₽`;
                     window.open(
@@ -295,7 +305,7 @@ export default function ProductPage() {
                   variant="outline"
                   size="lg"
                   className="h-14 px-8 rounded-2xl flex-1"
-                  disabled={product.status !== "available"}
+                  disabled={!isAvailable}
                   onClick={() => {
                     const message = `Здравствуйте! Интересует товар: ${product.name}\nЦена: ${product.price} ₽`;
                     window.open(

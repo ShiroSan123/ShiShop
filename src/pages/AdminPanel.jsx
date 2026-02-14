@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+п»їimport React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { uploadProductImage } from "@/lib/supabase/storage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -33,6 +34,18 @@ import { toast } from "sonner";
  * @property {string} description
  */
 
+/**
+ * @typedef {Object} CreateProductPayload
+ * @property {string} title
+ * @property {string} slug
+ * @property {"personal" | "china"} type
+ * @property {"available" | "reserved" | "sold"} status
+ * @property {number} price
+ * @property {string} description
+ * @property {string[]} images
+ * @property {string} currency
+ */
+
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -44,6 +57,17 @@ export default function AdminPanel() {
     price: 0,
     description: "",
   });
+  const [newProductForm, setNewProductForm] = useState({
+    name: "",
+    category: "personal",
+    status: "available",
+    price: 0,
+    description: "",
+    imageUrl: "",
+  });
+  const [newProductImageFiles, setNewProductImageFiles] = useState([]);
+  const [newProductPreviewUrls, setNewProductPreviewUrls] = useState([]);
+
   const queryClient = useQueryClient();
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "admin";
@@ -72,7 +96,7 @@ export default function AdminPanel() {
       base44.entities.Order.update(payload.id, { status: payload.status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
-      toast.success("Статус заказа обновлен");
+      toast.success("Status updated");
     },
   });
 
@@ -89,10 +113,67 @@ export default function AdminPanel() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       setEditingProductId(null);
-      toast.success("Товар обновлен");
+      toast.success("Product updated");
     },
     onError: () => {
-      toast.error("Не удалось обновить товар");
+      toast.error("Failed to update product");
+    },
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: async () => {
+      const name = newProductForm.name.trim();
+      if (!name) {
+        throw new Error("Product name is required");
+      }
+
+      const uploadedImageUrls =
+        newProductImageFiles.length > 0
+          ? await Promise.all(newProductImageFiles.map((file) => uploadProductImage(file)))
+          : [];
+
+      const manualImageUrls = newProductForm.imageUrl
+        .split(/[\n,]/)
+        .map((url) => url.trim())
+        .filter(Boolean);
+
+      const finalImages = [...uploadedImageUrls, ...manualImageUrls];
+
+      const slug = name
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}\s-]/gu, "")
+        .trim()
+        .replace(/\s+/g, "-");
+
+      const payload =
+        /** @type {CreateProductPayload} */ ({
+          title: name,
+          slug: slug || `product-${Date.now()}`,
+          type: newProductForm.category,
+          status: newProductForm.status,
+          price: Number(newProductForm.price || 0),
+          description: newProductForm.description || "",
+          images: finalImages,
+          currency: "RUB",
+        });
+
+      return base44.entities.Product.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      setNewProductForm({
+        name: "",
+        category: "personal",
+        status: "available",
+        price: 0,
+        description: "",
+        imageUrl: "",
+      });
+      setNewProductImageFiles([]);
+      toast.success("Product added");
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to add product");
     },
   });
 
@@ -100,7 +181,7 @@ export default function AdminPanel() {
     mutationFn: (id) => base44.entities.Product.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
-      toast.success("Товар удален");
+      toast.success("Product deleted");
     },
   });
 
@@ -108,16 +189,30 @@ export default function AdminPanel() {
     mutationFn: (id) => base44.entities.Review.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
-      toast.success("Отзыв удален");
+      toast.success("Review deleted");
     },
   });
+
+  useEffect(() => {
+    const objectUrls = newProductImageFiles.map((file) => URL.createObjectURL(file));
+    const manualImageUrls = newProductForm.imageUrl
+      .split(/[\n,]/)
+      .map((url) => url.trim())
+      .filter(Boolean);
+
+    setNewProductPreviewUrls([...objectUrls, ...manualImageUrls]);
+
+    return () => {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [newProductImageFiles, newProductForm.imageUrl]);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
-      toast.success("Добро пожаловать в админ-панель");
+      toast.success("Welcome to admin panel");
     } else {
-      toast.error("Неверный пароль");
+      toast.error("Wrong password");
     }
   };
 
@@ -159,20 +254,20 @@ export default function AdminPanel() {
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-900 flex items-center justify-center">
               <Lock className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">Админ-панель</h1>
-            <p className="text-slate-600">Введите пароль для доступа</p>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Admin Panel</h1>
+            <p className="text-slate-600">Enter password to continue</p>
           </div>
           <div className="space-y-4">
             <Input
               type="password"
-              placeholder="Пароль"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleLogin()}
               className="h-12"
             />
             <Button onClick={handleLogin} className="w-full h-12">
-              Войти
+              Login
             </Button>
           </div>
         </Card>
@@ -181,20 +276,20 @@ export default function AdminPanel() {
   }
 
   const statusLabels = {
-    pending: "В обработке",
-    confirmed: "Подтвержден",
-    shipped: "Отправлен",
-    delivered: "Доставлен",
-    cancelled: "Отменен",
+    pending: "Pending",
+    confirmed: "Confirmed",
+    shipped: "Shipped",
+    delivered: "Delivered",
+    cancelled: "Cancelled",
   };
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold text-slate-900">Админ-панель</h1>
+          <h1 className="text-4xl font-bold text-slate-900">Admin Panel</h1>
           <Button variant="outline" onClick={() => setIsAuthenticated(false)}>
-            Выйти
+            Logout
           </Button>
         </div>
 
@@ -202,28 +297,28 @@ export default function AdminPanel() {
           <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="orders">
               <ShoppingBag className="w-4 h-4 mr-2" />
-              Заказы
+              Orders
             </TabsTrigger>
             <TabsTrigger value="products">
               <Package className="w-4 h-4 mr-2" />
-              Товары
+              Products
             </TabsTrigger>
             <TabsTrigger value="reviews">
               <Star className="w-4 h-4 mr-2" />
-              Отзывы
+              Reviews
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders" className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-900">Управление заказами</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Manage orders</h2>
             {orders.map((order) => (
               <Card key={order.id} className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="font-semibold text-lg">Заказ #{order.order_number}</h3>
+                    <h3 className="font-semibold text-lg">Order #{order.order_number}</h3>
                     <p className="text-sm text-slate-500">{order.customer_email}</p>
                     <p className="text-sm text-slate-500">
-                      {order.items.length} товар(ов) • {order.total} ?
+                      {order.items.length} items - {order.total} RUB
                     </p>
                   </div>
                   <Select
@@ -252,9 +347,7 @@ export default function AdminPanel() {
                       <span>
                         {item.product_name} x{item.quantity}
                       </span>
-                      <span>
-                        {(item.product_price * item.quantity).toLocaleString("ru-RU")} ?
-                      </span>
+                      <span>{(item.product_price * item.quantity).toLocaleString("ru-RU")} RUB</span>
                     </div>
                   ))}
                 </div>
@@ -263,7 +356,120 @@ export default function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="products" className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-900">Управление товарами</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Manage products</h2>
+
+            <Card className="p-4 space-y-4">
+              <h3 className="font-semibold text-slate-900">Add product</h3>
+              <div className="grid md:grid-cols-2 gap-3">
+                <Input
+                  value={newProductForm.name}
+                  onChange={(e) =>
+                    setNewProductForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  placeholder="Name"
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  value={newProductForm.price}
+                  onChange={(e) =>
+                    setNewProductForm((prev) => ({
+                      ...prev,
+                      price: Number(e.target.value || 0),
+                    }))
+                  }
+                  placeholder="Price"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-3">
+                <Select
+                  value={newProductForm.category}
+                  onValueChange={(value) =>
+                    setNewProductForm((prev) => ({ ...prev, category: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="personal">personal</SelectItem>
+                    <SelectItem value="china">china</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={newProductForm.status}
+                  onValueChange={(value) =>
+                    setNewProductForm((prev) => ({ ...prev, status: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">available</SelectItem>
+                    <SelectItem value="reserved">reserved</SelectItem>
+                    <SelectItem value="sold">sold</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-3">
+                <Input
+                  type="file"
+                  multiple
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={(e) =>
+                    setNewProductImageFiles(e.target.files ? Array.from(e.target.files) : [])
+                  }
+                />
+                <Input
+                  value={newProductForm.imageUrl}
+                  onChange={(e) =>
+                    setNewProductForm((prev) => ({ ...prev, imageUrl: e.target.value }))
+                  }
+                  placeholder="Or image URL(s), comma or new line"
+                />
+              </div>
+
+              {newProductPreviewUrls.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-600">Image preview</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {newProductPreviewUrls.map((url, index) => (
+                      <div
+                        key={`${url}-${index}`}
+                        className="aspect-square rounded-lg overflow-hidden border"
+                      >
+                        <img
+                          src={url}
+                          alt={`preview-${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Textarea
+                value={newProductForm.description}
+                onChange={(e) =>
+                  setNewProductForm((prev) => ({ ...prev, description: e.target.value }))
+                }
+                placeholder="Description"
+                className="min-h-24"
+              />
+
+              <Button
+                onClick={() => createProductMutation.mutate()}
+                disabled={createProductMutation.isPending}
+              >
+                {createProductMutation.isPending ? "Adding..." : "Add product"}
+              </Button>
+            </Card>
+
             <div className="grid gap-4">
               {products.map((product) => (
                 <Card key={product.id} className="p-4">
@@ -279,7 +485,7 @@ export default function AdminPanel() {
                     <div className="flex-1">
                       <h3 className="font-semibold text-slate-900">{product.name}</h3>
                       <p className="text-sm text-slate-500">
-                        {product.price} ? • {product.category}
+                        {product.price} RUB - {product.category}
                       </p>
                       <Badge className="mt-1">{product.status}</Badge>
                     </div>
@@ -310,7 +516,7 @@ export default function AdminPanel() {
                           onChange={(e) =>
                             setEditProductForm((prev) => ({ ...prev, name: e.target.value }))
                           }
-                          placeholder="Название"
+                          placeholder="Name"
                         />
                         <Input
                           type="number"
@@ -322,7 +528,7 @@ export default function AdminPanel() {
                               price: Number(e.target.value || 0),
                             }))
                           }
-                          placeholder="Цена"
+                          placeholder="Price"
                         />
                       </div>
 
@@ -334,7 +540,7 @@ export default function AdminPanel() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Категория" />
+                            <SelectValue placeholder="Category" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="personal">personal</SelectItem>
@@ -349,7 +555,7 @@ export default function AdminPanel() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Статус" />
+                            <SelectValue placeholder="Status" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="available">available</SelectItem>
@@ -364,7 +570,7 @@ export default function AdminPanel() {
                         onChange={(e) =>
                           setEditProductForm((prev) => ({ ...prev, description: e.target.value }))
                         }
-                        placeholder="Описание товара"
+                        placeholder="Description"
                         className="min-h-24"
                       />
 
@@ -373,10 +579,10 @@ export default function AdminPanel() {
                           onClick={saveEditedProduct}
                           disabled={updateProductMutation.isPending}
                         >
-                          Сохранить
+                          Save
                         </Button>
                         <Button variant="outline" onClick={cancelEditProduct}>
-                          Отмена
+                          Cancel
                         </Button>
                       </div>
                     </div>
@@ -387,7 +593,7 @@ export default function AdminPanel() {
           </TabsContent>
 
           <TabsContent value="reviews" className="space-y-4">
-            <h2 className="text-2xl font-bold text-slate-900">Управление отзывами</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Manage reviews</h2>
             {reviews.map((review) => (
               <Card key={review.id} className="p-6">
                 <div className="flex items-start justify-between">

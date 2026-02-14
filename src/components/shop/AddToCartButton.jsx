@@ -48,7 +48,18 @@ export default function AddToCartButton({
     },
   });
 
-  if (product.status !== "available") {
+  const rawStatus = String(product.status || "available").toLowerCase();
+  const normalizedStatus =
+    rawStatus === "в наличии"
+      ? "available"
+      : rawStatus === "забронировано"
+        ? "reserved"
+        : rawStatus === "продано"
+          ? "sold"
+          : rawStatus;
+  const isAvailable = normalizedStatus === "available";
+
+  if (!isAvailable) {
     return (
       <Button disabled size={size} variant={variant} className={className}>
         Недоступно
