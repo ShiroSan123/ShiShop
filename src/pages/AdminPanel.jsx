@@ -27,7 +27,7 @@ export default function AdminPanel() {
   const [password, setPassword] = useState("");
   const queryClient = useQueryClient();
 
-  const ADMIN_PASSWORD = "admin123";
+  const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "admin";
 
   const { data: products = [] } = useQuery({
     queryKey: ["admin-products"],
@@ -169,7 +169,10 @@ export default function AdminPanel() {
                     value={order.status}
                     onValueChange={(status) =>
                       updateOrderMutation.mutate(
-                        /** @type {UpdateOrderPayload} */ ({ id: order.id, status }),
+                        /** @type {UpdateOrderPayload} */ ({
+                          id: order.id,
+                          status,
+                        }),
                       )
                     }
                   >

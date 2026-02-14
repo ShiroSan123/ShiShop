@@ -128,7 +128,7 @@ export default function Contacts() {
 
           <div className="mt-8 pt-8 border-t border-white/10">
             <p className="text-slate-300 leading-relaxed">
-              Я всегда рада помочь с выбором или ответить на любые вопросы. Не
+              Я всегда рад помочь с выбором или ответить на любые вопросы. Не
               стесняйтесь писать — обычно отвечаю в течение нескольких часов!
             </p>
           </div>
