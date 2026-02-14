@@ -1,31 +1,32 @@
-import ShopPersonal from './pages/ShopPersonal';
-import ShopChina from './pages/ShopChina';
-import About from './pages/About';
-import Contacts from './pages/Contacts';
-import AdminProductEdit from './pages/AdminProductEdit';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminProducts from './pages/AdminProducts';
-import Home from './pages/Home';
-import ProductPage from './pages/ProductPage';
-import Shop from './pages/Shop';
-import __Layout from './Layout.jsx';
-
+import Home from "./pages/Home";
+import Catalog from "./pages/Catalog";
+import CatalogPersonal from "./pages/CatalogPersonal";
+import CatalogChina from "./pages/CatalogChina";
+import ProductPage from "./pages/ProductPage";
+import About from "./pages/About";
+import Contacts from "./pages/Contacts";
+import Cart from "./pages/Cart";
+import Orders from "./pages/Orders";
+import Wishlist from "./pages/Wishlist";
+import AdminPanel from "./pages/AdminPanel";
+import __Layout from "./Layout.jsx";
 
 export const PAGES = {
-    "ShopPersonal": ShopPersonal,
-    "ShopChina": ShopChina,
-    "About": About,
-    "Contacts": Contacts,
-    "AdminProductEdit": AdminProductEdit,
-    "AdminDashboard": AdminDashboard,
-    "AdminProducts": AdminProducts,
-    "Home": Home,
-    "ProductPage": ProductPage,
-    "Shop": Shop,
-}
+  Home: Home,
+  Catalog: Catalog,
+  CatalogPersonal: CatalogPersonal,
+  CatalogChina: CatalogChina,
+  ProductPage: ProductPage,
+  About: About,
+  Contacts: Contacts,
+  Cart: Cart,
+  Orders: Orders,
+  Wishlist: Wishlist,
+  AdminPanel: AdminPanel,
+};
 
 export const pagesConfig = {
-    mainPage: "Home",
-    Pages: PAGES,
-    Layout: __Layout,
+  mainPage: "Home",
+  Pages: PAGES,
+  Layout: __Layout,
 };
