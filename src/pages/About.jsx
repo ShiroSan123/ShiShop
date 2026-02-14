@@ -1,97 +1,112 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { Button } from "@/components/ui/button";
-import { Package, ShoppingBag, CheckCircle, ArrowRight, Send } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Sparkles, Heart, Shield, Truck, Package } from "lucide-react";
+
+const features = [
+  {
+    icon: Shield,
+    title: "Гарантия качества",
+    description: "Каждый товар проверен лично перед продажей",
+  },
+  {
+    icon: Truck,
+    title: "Быстрая доставка",
+    description: "Отправляю в день заказа или на следующий день",
+  },
+  {
+    icon: Package,
+    title: "Надёжная упаковка",
+    description: "Все товары аккуратно упакованы",
+  },
+  {
+    icon: Heart,
+    title: "Забота о покупателе",
+    description: "Всегда на связи и готова помочь",
+  },
+];
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Обо мне
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Привет! Меня зовут Ренат. Я веду этот магазин, чтобы дать вторую жизнь 
-              своим вещам и делиться классными находками из Китая.
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-indigo-50 pt-24">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <div className="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-2xl shadow-violet-500/30 mb-6">
+            <Sparkles className="w-12 h-12 text-white" />
           </div>
-        </div>
-      </section>
-
-      {/* What I do */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-12">Что я делаю</h2>
-        
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="p-8 bg-gradient-to-br from-rose-50 to-amber-50 dark:from-rose-500/15 dark:to-amber-500/10 rounded-3xl">
-            <div className="w-14 h-14 rounded-2xl bg-rose-100 dark:bg-rose-500/25 flex items-center justify-center mb-6">
-              <Package className="w-7 h-7 text-rose-600 dark:text-rose-200" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-4">Продаю личные вещи</h3>
-            <p className="text-muted-foreground mb-6">
-              Качественная одежда, аксессуары и другие вещи, которые мне больше не нужны. 
-              Всё в отличном состоянии, по честным ценам.
-            </p>
-            <ul className="space-y-3">
-              {['Проверенное состояние', 'Реальные фото', 'Честные описания'].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-foreground/80">
-                  <CheckCircle className="w-5 h-5 text-rose-500 dark:text-rose-300" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="p-8 bg-gradient-to-br from-sky-50 to-emerald-50 dark:from-sky-500/15 dark:to-emerald-500/10 rounded-3xl">
-            <div className="w-14 h-14 rounded-2xl bg-sky-100 dark:bg-sky-500/25 flex items-center justify-center mb-6">
-              <ShoppingBag className="w-7 h-7 text-sky-600 dark:text-sky-200" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-4">Нахожу товары в Китае</h3>
-            <p className="text-muted-foreground mb-6">
-              Отбираю интересные и качественные товары с китайских маркетплейсов. 
-              Проверяю лично, прежде чем предложить вам.
-            </p>
-            <ul className="space-y-3">
-              {['Тщательный отбор', 'Проверка качества', 'Выгодные цены'].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-foreground/80">
-                  <CheckCircle className="w-5 h-5 text-sky-500 dark:text-sky-300" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="bg-foreground text-background dark:bg-card dark:text-foreground rounded-3xl p-8 md:p-12 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-background dark:text-foreground mb-4">
-            Остались вопросы?
-          </h2>
-          <p className="text-background/70 dark:text-muted-foreground mb-8 max-w-xl mx-auto">
-            Напишите мне в Telegram — отвечу на все вопросы и помогу с выбором
+          <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
+            Обо мне
+          </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            Привет! Я создала этот магазин, чтобы делиться классными находками и
+            вещами, которые больше не использую.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="https://t.me/ShiruiSan" target="_blank" rel="noopener noreferrer">
-              <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-white text-base font-medium gap-2">
-                <Send className="w-5 h-5" />
-                Написать в Telegram
-              </Button>
-            </a>
-            <Link to={createPageUrl('Shop')}>
-              <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 rounded-xl text-base font-medium gap-2 bg-transparent border-2 border-background/40 text-background hover:bg-background/10 dark:border-foreground/20 dark:text-foreground dark:hover:bg-muted/60">
-                Смотреть каталог
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
+        </motion.div>
+
+        {/* Story */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-100 mb-12"
+        >
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">
+            Моя история
+          </h2>
+          <div className="prose prose-slate max-w-none">
+            <p className="text-slate-600 leading-relaxed mb-4">
+              Всё началось с того, что у меня накопилось много хороших вещей,
+              которые я больше не ношу, но они в отличном состоянии. Было жаль
+              просто отдавать их, поэтому я решила продавать по приятным ценам.
+            </p>
+            <p className="text-slate-600 leading-relaxed mb-4">
+              Параллельно я часто заказываю интересные товары из Китая — и для
+              себя, и под заказ для друзей. Так появилась идея объединить всё в
+              одном месте.
+            </p>
+            <p className="text-slate-600 leading-relaxed">
+              Здесь вы найдёте мои личные вещи в отличном состоянии и
+              проверенные находки с китайских маркетплейсов. Каждый товар
+              проверен мной лично, и я уверена в его качестве.
+            </p>
           </div>
-        </div>
-      </section>
+        </motion.div>
+
+        {/* Features */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">
+            Почему выбирают меня
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-6">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-600">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
