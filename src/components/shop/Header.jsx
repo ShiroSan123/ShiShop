@@ -24,7 +24,6 @@ export default function Header() {
     queryFn: async () => {
       try {
         const user = await base44.auth.me();
-        return base44.entities.CartItem.filter({ created_by: user.email });
       } catch {
         return [];
       }
@@ -36,7 +35,6 @@ export default function Header() {
     queryFn: async () => {
       try {
         const user = await base44.auth.me();
-        return base44.entities.WishlistItem.filter({ created_by: user.email });
       } catch {
         return [];
       }

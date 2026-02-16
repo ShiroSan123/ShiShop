@@ -293,7 +293,7 @@ export default function ProductPage() {
                   onClick={() => {
                     const message = `Здравствуйте! Интересует товар: ${product.name}\nЦена: ${product.price} ₽`;
                     window.open(
-                      `https://t.me/ShiruiSan?text=${encodeURIComponent(message)}`,
+                      `https://t.me/Aaiissnn?text=${encodeURIComponent(message)}`,
                       "_blank",
                     );
                   }}
