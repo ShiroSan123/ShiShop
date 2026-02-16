@@ -16,7 +16,7 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">ShiShop</span>
+              <span className="text-xl font-bold">AisShop</span>
             </div>
             <p className="text-slate-400 max-w-sm leading-relaxed">
               Уникальные находки и личные вещи в отличном состоянии. Всё
@@ -84,7 +84,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-sm">
-            © {currentYear} ShiShop. Все права защищены.
+            © {currentYear} AisShop. Все права защищены.
           </p>
           <p className="text-slate-400 text-sm flex items-center gap-1">
             Сделано с <Heart className="w-4 h-4 text-red-500" />

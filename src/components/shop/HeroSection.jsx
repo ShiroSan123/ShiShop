@@ -60,7 +60,7 @@ export default function HeroSection() {
             <span className="text-slate-900">Добро пожаловать в</span>
             <br />
             <span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              ShiShop
+              AisShop
             </span>
           </motion.h1>
 

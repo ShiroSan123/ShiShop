@@ -1,6 +1,6 @@
 import { getSupabaseClient, isSupabaseConfigured } from './client';
 
-const ADMIN_SESSION_KEY = 'shishop_session';
+const ADMIN_SESSION_KEY = 'AisShop_session';
 const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin';
 

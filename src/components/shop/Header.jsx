@@ -74,7 +74,7 @@ export default function Header() {
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-              ShiShop
+              AisShop
             </span>
           </Link>
 
