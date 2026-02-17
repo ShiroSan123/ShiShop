@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
+import { getShopUserKey } from "@/lib/shopUser";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,9 +32,9 @@ export default function Cart() {
   const { data: cartItems = [], isLoading } = useQuery({
     queryKey: ["cart"],
     queryFn: async () => {
-      const user = await base44.auth.me();
+      const userKey = await getShopUserKey();
       return base44.entities.CartItem.filter(
-        { created_by: user.email },
+        { created_by: userKey },
         "-created_date",
       );
     },
@@ -42,7 +43,9 @@ export default function Cart() {
   const updateQuantityMutation = useMutation({
     /** @param {UpdateCartQuantityPayload} payload */
     mutationFn: (payload) =>
-      base44.entities.CartItem.update(payload.id, { quantity: payload.quantity }),
+      base44.entities.CartItem.update(payload.id, {
+        quantity: payload.quantity,
+      }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cart"] }),
   });
 
@@ -55,7 +58,8 @@ export default function Cart() {
   });
 
   const total = cartItems.reduce(
-    (sum, item) => sum + item.product_price * item.quantity,
+    (sum, item) =>
+      sum + Number(item.product_price || 0) * Number(item.quantity || 0),
     0,
   );
 
@@ -64,10 +68,12 @@ export default function Cart() {
     message += "*Товары:*\n";
 
     cartItems.forEach((item, index) => {
+      const price = Number(item.product_price || 0);
+      const quantity = Number(item.quantity || 0);
       message += `${index + 1}. ${item.product_name}\n`;
-      message += `   Цена: ${item.product_price.toLocaleString("ru-RU")} ₽\n`;
-      message += `   Количество: ${item.quantity}\n`;
-      message += `   Сумма: ${(item.product_price * item.quantity).toLocaleString("ru-RU")} ₽\n\n`;
+      message += `   Цена: ${price.toLocaleString("ru-RU")} ₽\n`;
+      message += `   Количество: ${quantity}\n`;
+      message += `   Сумма: ${(price * quantity).toLocaleString("ru-RU")} ₽\n\n`;
     });
 
     message += `*Итого: ${total.toLocaleString("ru-RU")} ₽*\n\n`;
@@ -85,7 +91,7 @@ export default function Cart() {
       return;
     }
 
-    const telegramUrl = `https://t.me/ShiShop?text=${createTelegramMessage()}`;
+    const telegramUrl = `https://t.me/ShiruiSan?text=${createTelegramMessage()}`;
     window.open(telegramUrl, "_blank");
   };
 
@@ -139,7 +145,6 @@ export default function Cart() {
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item, index) => (
               <motion.div
@@ -174,7 +179,10 @@ export default function Cart() {
                         </h3>
                       </Link>
                       <p className="text-lg font-bold text-slate-900 mt-2">
-                        {item.product_price.toLocaleString("ru-RU")} ₽
+                        {Number(item.product_price || 0).toLocaleString(
+                          "ru-RU",
+                        )}{" "}
+                        ₽
                       </p>
                       <div className="flex items-center gap-3 mt-4">
                         <div className="flex items-center gap-2 border border-slate-200 rounded-lg">
@@ -183,10 +191,10 @@ export default function Cart() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => {
-                              if (item.quantity > 1) {
+                              if (Number(item.quantity || 0) > 1) {
                                 updateQuantityMutation.mutate({
                                   id: item.id,
-                                  quantity: item.quantity - 1,
+                                  quantity: Number(item.quantity || 1) - 1,
                                 });
                               }
                             }}
@@ -196,8 +204,13 @@ export default function Cart() {
                           <Input
                             type="number"
                             value={item.quantity}
+                            min={1}
                             onChange={(e) => {
-                              const val = parseInt(e.target.value) || 1;
+                              const parsed = parseInt(e.target.value, 10);
+                              const val =
+                                Number.isFinite(parsed) && parsed > 0
+                                  ? parsed
+                                  : 1;
                               updateQuantityMutation.mutate({
                                 id: item.id,
                                 quantity: val,
@@ -212,7 +225,7 @@ export default function Cart() {
                             onClick={() =>
                               updateQuantityMutation.mutate({
                                 id: item.id,
-                                quantity: item.quantity + 1,
+                                quantity: Number(item.quantity || 0) + 1,
                               })
                             }
                           >
@@ -231,9 +244,10 @@ export default function Cart() {
                     </div>
                     <div className="text-right">
                       <p className="text-xl font-bold text-slate-900">
-                        {(item.product_price * item.quantity).toLocaleString(
-                          "ru-RU",
-                        )}{" "}
+                        {(
+                          Number(item.product_price || 0) *
+                          Number(item.quantity || 0)
+                        ).toLocaleString("ru-RU")}{" "}
                         ₽
                       </p>
                     </div>
@@ -243,7 +257,6 @@ export default function Cart() {
             ))}
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -252,7 +265,6 @@ export default function Cart() {
             >
               <Card className="p-6 space-y-6">
                 <h2 className="text-2xl font-bold text-slate-900">Итого</h2>
-
                 <div className="space-y-3">
                   <div className="flex justify-between text-slate-600">
                     <span>Товары ({cartItems.length})</span>
@@ -265,7 +277,6 @@ export default function Cart() {
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-2 block">
                     Комментарий к заказу (опционально)
@@ -277,7 +288,6 @@ export default function Cart() {
                     className="h-24"
                   />
                 </div>
-
                 <Button
                   size="lg"
                   className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-base"
@@ -286,7 +296,6 @@ export default function Cart() {
                   <Send className="w-5 h-5 mr-2" />
                   Оформить через Telegram
                 </Button>
-
                 <p className="text-xs text-slate-500 text-center">
                   После нажатия откроется Telegram с готовым сообщением для
                   отправки продавцу

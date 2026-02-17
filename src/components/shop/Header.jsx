@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
+import { getShopUserKey } from "@/lib/shopUser";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -22,26 +23,20 @@ export default function Header() {
   const { data: cartItems = [] } = useQuery({
     queryKey: ["cart"],
     queryFn: async () => {
-      try {
-        const user = await base44.auth.me();
-      } catch {
-        return [];
-      }
+      const userKey = await getShopUserKey();
+      return base44.entities.CartItem.filter({ created_by: userKey }, "-created_date");
     },
   });
 
   const { data: wishlistItems = [] } = useQuery({
     queryKey: ["wishlist"],
     queryFn: async () => {
-      try {
-        const user = await base44.auth.me();
-      } catch {
-        return [];
-      }
+      const userKey = await getShopUserKey();
+      return base44.entities.WishlistItem.filter({ created_by: userKey }, "-created_date");
     },
   });
 
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartCount = cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
   const wishlistCount = wishlistItems.length;
 
   const navItems = [
@@ -65,11 +60,7 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <Link
-            to={createPageUrl("Home")}
-            className="flex items-center gap-2 group"
-          >
+          <Link to={createPageUrl("Home")} className="flex items-center gap-2 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25 group-hover:shadow-violet-500/40 transition-shadow">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
@@ -78,7 +69,6 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <Link
@@ -91,14 +81,9 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Right Side */}
           <div className="flex items-center gap-2">
             <Link to={createPageUrl("Wishlist")}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-xl relative"
-              >
+              <Button variant="ghost" size="icon" className="rounded-xl relative">
                 <Heart className="w-5 h-5" />
                 {wishlistCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
@@ -108,11 +93,7 @@ export default function Header() {
               </Button>
             </Link>
             <Link to={createPageUrl("Cart")}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-xl relative"
-              >
+              <Button variant="ghost" size="icon" className="rounded-xl relative">
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-violet-600 text-white text-xs">
@@ -127,14 +108,9 @@ export default function Header() {
               className="rounded-xl"
               onClick={() => setDarkMode(!darkMode)}
             >
-              {darkMode ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
 
-            {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild className="md:hidden">
                 <Button variant="ghost" size="icon" className="rounded-xl">

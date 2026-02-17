@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
+import { getShopUserKey } from "@/lib/shopUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ShoppingCart, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,22 +18,23 @@ export default function AddToCartButton({
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
-      const user = await base44.auth.me();
+      const userKey = await getShopUserKey();
       const existingItems = await base44.entities.CartItem.filter({
         product_id: product.id,
-        created_by: user.email,
+        created_by: userKey,
       });
 
       if (existingItems.length > 0) {
         await base44.entities.CartItem.update(existingItems[0].id, {
-          quantity: existingItems[0].quantity + 1,
+          quantity: Number(existingItems[0].quantity || 0) + 1,
         });
       } else {
         await base44.entities.CartItem.create({
+          created_by: userKey,
           product_id: product.id,
           quantity: 1,
-          product_name: product.name,
-          product_price: product.price,
+          product_name: product.name || product.title || "Товар",
+          product_price: Number(product.price || 0),
           product_image: product.images?.[0] || "",
         });
       }
