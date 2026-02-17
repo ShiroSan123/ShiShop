@@ -7,7 +7,7 @@ const contacts = [
   {
     icon: Send,
     title: "Telegram",
-    value: "@Aaiissnn",
+    value: "@ShiruiSan",
     href: "#",
     color: "from-blue-500 to-cyan-500",
     buttonText: "Написать",
@@ -15,7 +15,7 @@ const contacts = [
   {
     icon: MessageCircle,
     title: "WhatsApp",
-    value: "+7 (914) 111-00-35",
+    value: "+7 (993) 181-75-20",
     href: "#",
     color: "from-green-500 to-emerald-500",
     buttonText: "Написать",
@@ -23,8 +23,8 @@ const contacts = [
   {
     icon: Mail,
     title: "Email",
-    value: "aisen.arg@gmail.com",
-    href: "mailto:aisen.arg@gmail.com",
+    value: "harlampevrenat@gmail.com",
+    href: "mailto:harlampevrenat@gmail.com",
     color: "from-violet-500 to-purple-500",
     buttonText: "Написать",
   },

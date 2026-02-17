@@ -60,7 +60,7 @@ export default function Cart() {
   );
 
   const createTelegramMessage = () => {
-    let message = "🛍️ *Новый заказ из AisShop*\n\n";
+    let message = "🛍️ *Новый заказ из ShiShop*\n\n";
     message += "*Товары:*\n";
 
     cartItems.forEach((item, index) => {
@@ -85,7 +85,7 @@ export default function Cart() {
       return;
     }
 
-    const telegramUrl = `https://t.me/AisShop?text=${createTelegramMessage()}`;
+    const telegramUrl = `https://t.me/ShiShop?text=${createTelegramMessage()}`;
     window.open(telegramUrl, "_blank");
   };
 
